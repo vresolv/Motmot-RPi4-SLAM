@@ -1,7 +1,7 @@
 #include <motmotCore.hpp>
 
 motmotCore::motmotCore(QObject *parent, int argc, char *argv[]) {
-    //pCamManager = std::make_unique<cameraManager>(this);
+    pCamManager = std::make_unique<cameraManager>(this);
     pImuManager = std::make_unique<imuManager>(this);
     
     std::string vocabPath = argv[1];
@@ -17,13 +17,14 @@ motmotCore::motmotCore(QObject *parent, int argc, char *argv[]) {
     pOrbSlamManager = std::make_unique<orbSlamManager>(this, argv[1], argv[2], if_visualize);
 
     QObject::connect(pImuManager.get(), &imuManager::sendCurrentImuFrame, pOrbSlamManager.get(), &orbSlamManager::recImuData);
+    QObject::connect(pCamManager.get(), &cameraManager::sendCurrentFrame, pOrbSlamManager.get(), &orbSlamManager::recCamData);
 
     pOrbSlamManager->start();
     pImuManager->startImu(argv[4]);
     pImuManager->start();
 
-    //pCamManager->startCam(640, 480, 15);
-    //pCamManager->start();
+    pCamManager->startCam(640, 480, 15);
+    pCamManager->start();
 }
 
 motmotCore::~motmotCore() {

@@ -2,20 +2,26 @@ cmake_minimum_required(VERSION 3.1)
 
 project(MotMot)
 
+set(CMAKE_PREFIX_PATH "external/PANGOLIN" ${CMAKE_PREFIX_PATH})
+
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSATLL_RPATH_USE_LINK_PATH TRUE)
+
 find_package(OpenCV REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Core SerialPort)
 find_package(Eigen3 REQUIRED)
 find_package(Pangolin REQUIRED)
 
-set(ORB_LIBRARY_PATH "ORBSLAM3/lib")
-set(ORB_INCLUDE_PATH "ORBSLAM3/include")
-set(ORB_CAM_MODELS_INCLUDE_PATH "ORBSLAM3/include/CameraModels")
-set(ORB_THIRDPARTY_INCLUDE "ORBSLAM3")
-set(ORB_THIRDPARTY_SOPHUS_INCLUDE "ORBSLAM3/Thirdparty/Sophus")
-set(LIBCAMERA_LIB_PATH "LIBCAMERA/lib")
-set(LIBCAMERA_INLCUDE_PATH "LIBCAMERA/include")
-set(LCCV_LIB_PATH "LCCV/lib")
-set(LCCV_INLCUDE_PATH "LCCV/include")
+set(ORB_LIBRARY_PATH "external/ORBSLAM3/lib")
+set(ORB_INCLUDE_PATH "external/ORBSLAM3/include")
+set(ORB_CAM_MODELS_INCLUDE_PATH "external/ORBSLAM3/include/CameraModels")
+set(ORB_THIRDPARTY_INCLUDE "external/ORBSLAM3")
+set(ORB_THIRDPARTY_SOPHUS_INCLUDE "external/ORBSLAM3/Thirdparty/Sophus")
+set(LIBCAMERA_LIB_PATH "external/LIBCAMERA/lib")
+set(LIBCAMERA_INLCUDE_PATH "external/LIBCAMERA/include")
+set(LCCV_LIB_PATH "external/LCCV/lib")
+set(LCCV_INLCUDE_PATH "external/LCCV/include")
 
 include_directories(
 ${ORB_INCLUDE_PATH}
@@ -46,7 +52,7 @@ set(SOURCES
     main.cpp
 )
 
-add_executable(${PROJECT_NAME} 
+add_executable(${PROJECT_NAME}
     ${SOURCES} ${HEADERS})
 
 find_library(ORB_LIBRARY NAMES ORB_SLAM3 PATHS ${ORB_LIBRARY_PATH})
@@ -66,4 +72,20 @@ target_link_libraries(${PROJECT_NAME}
     ${Pangolin_LIBRARIES}
 )
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR}/install/bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+install(FILES 
+${ORB_LIBRARY} 
+${LIBCAMERA_LIB_PATH}/libcamera.so
+${LIBCAMERA_LIB_PATH}/libcamera.so.0.3
+${LIBCAMERA_LIB_PATH}/libcamera.so.0.3.2
+${LIBCAMERA_LIB_PATH}/libcamera-base.so
+${LIBCAMERA_LIB_PATH}/libcamera-base.so.0.3
+${LIBCAMERA_LIB_PATH}/libcamera-base.so.0.3.2
+${LCCV_LIBRARY}
+DESTINATION lib
+)
+
+install(DIRECTORY external/PANGOLIN/lib/ DESTINATION lib)
+
+install(CODE "file(REMOVE_RECURSE \"\${CMAKE_INSTALL_PREFIX}/lib/cmake\")")

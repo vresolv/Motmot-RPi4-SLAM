@@ -54,6 +54,6 @@ void orbSlamManager::recImuData(const QString &frame) {
 
     imuData.push_back(ORB_SLAM3::IMU::Point(ax, ay, az, mx, my, mz, now_ns));
 
-    std::cout << std::setprecision(std::numeric_limits<double>::max_digits10) << "Imu Data " << now_ns << " " << ax << " " << ay << " " << az << " " << mx << " " << my << " " << mz << " " << std::endl;
+    //std::cout << std::setprecision(std::numeric_limits<double>::max_digits10) << "Imu Data " << now_ns << " " << ax << " " << ay << " " << az << " " << mx << " " << my << " " << mz << " " << std::endl;
 
 }
