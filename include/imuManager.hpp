@@ -7,21 +7,23 @@
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
-class imuManager : public QThread {
+#include <iostream>
+
+class imuManager : public QObject {
     Q_OBJECT
 public:
-    explicit imuManager(QObject *parent = nullptr);
+    imuManager();
     ~imuManager();
+
+public slots:    
     void startImu(QString port);
     void stopImu();
-    void run() override;
 
 signals:
     void sendCurrentImuFrame(const QString &frame);
 
 private:
-    QSerialPort serialImu;
-    bool isRunning = false;
+    std::unique_ptr<QSerialPort> serialImu;
 };
 
 #endif // IMU_MANAGER_HPP

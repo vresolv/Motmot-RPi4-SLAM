@@ -14,16 +14,25 @@
 #include <QString>
 #include <QStringList>
 
-class orbSlamManager : public QThread {
+#include <iostream>
+
+//Hardcoded for now, for IMU sensor at 100 HZ, untested
+#define IMU_VECTOR_MAX_SIZE 100
+#define IMU_VECTOR_MIN_SIZE 45
+
+class orbSlamManager : public QObject {
     Q_OBJECT
 public:
-    explicit orbSlamManager(QObject *parent = nullptr, const string& strVocFile = "", const string &strSettingsFile = "", const bool &ifVisualize = true);
+    explicit orbSlamManager(QObject *parent);
     ~orbSlamManager();
+    
+    void initORBSLAM3(const string& strVocFile, const string &strSettingsFile, const bool &ifVisualize);
+    void stopORBSLAM3();
 
 public slots:
     void recCamData(cv::Mat frame);
     void recImuData(const QString &frame);
-
+    
 private:
     std::unique_ptr<ORB_SLAM3::System> pORBSLAM;
     float imgScale; 

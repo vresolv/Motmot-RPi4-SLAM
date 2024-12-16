@@ -9,7 +9,7 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSATLL_RPATH_USE_LINK_PATH TRUE)
 
 find_package(OpenCV REQUIRED)
-find_package(Qt5 REQUIRED COMPONENTS Core SerialPort)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets SerialPort)
 find_package(Eigen3 REQUIRED)
 find_package(Pangolin REQUIRED)
 
@@ -22,6 +22,8 @@ set(LIBCAMERA_LIB_PATH "external/LIBCAMERA/lib")
 set(LIBCAMERA_INLCUDE_PATH "external/LIBCAMERA/include")
 set(LCCV_LIB_PATH "external/LCCV/lib")
 set(LCCV_INLCUDE_PATH "external/LCCV/include")
+set(DBoW2_LIB_PATH "external/ORBSLAM3/Thirdparty/DBoW2/lib/")
+set(g2o_LIB_PATH "external/ORBSLAM3/Thirdparty/g2o/lib/")
 
 include_directories(
 ${ORB_INCLUDE_PATH}
@@ -59,6 +61,10 @@ find_library(ORB_LIBRARY NAMES ORB_SLAM3 PATHS ${ORB_LIBRARY_PATH})
 find_library(LIBCAM_LIBRARY NAMES camera PATHS ${LIBCAMERA_LIB_PATH})
 find_library(LIBCAMBASE_LIBRARY NAMES camera-base PATHS ${LIBCAMERA_LIB_PATH})
 find_library(LCCV_LIBRARY NAMES lccv PATHS ${LCCV_LIB_PATH})
+find_library(DBoW2_LIBRARY NAMES DBoW2 PATHS ${DBoW2_LIB_PATH})
+find_library(g2o_LIBRARY NAMES g2o PATHS ${g2o_LIB_PATH})
+
+target_link_options(${PROJECT_NAME} PRIVATE -Wl,--disable-new-dtags)
 
 target_link_libraries(${PROJECT_NAME} 
     ${ORB_LIBRARY}
@@ -67,22 +73,21 @@ target_link_libraries(${PROJECT_NAME}
     ${LCCV_LIBRARY} 
     ${OpenCV_LIBS}
     Qt5::Core
+    Qt5::Widgets
     Qt5::SerialPort
     Eigen3::Eigen
     ${Pangolin_LIBRARIES}
+    ${DBoW2_LIBRARY}
+    ${g2o_LIBRARY}
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 install(FILES 
 ${ORB_LIBRARY} 
-${LIBCAMERA_LIB_PATH}/libcamera.so
-${LIBCAMERA_LIB_PATH}/libcamera.so.0.3
-${LIBCAMERA_LIB_PATH}/libcamera.so.0.3.2
-${LIBCAMERA_LIB_PATH}/libcamera-base.so
-${LIBCAMERA_LIB_PATH}/libcamera-base.so.0.3
-${LIBCAMERA_LIB_PATH}/libcamera-base.so.0.3.2
 ${LCCV_LIBRARY}
+${DBoW2_LIBRARY}
+${g2o_LIBRARY}
 DESTINATION lib
 )
 

@@ -1,37 +1,42 @@
 #include <cameraManager.hpp>
 
-cameraManager::cameraManager(QObject *parent) : QThread(parent) {}
+cameraManager::cameraManager() {
+    
+    qRegisterMetaType<cv::Mat>("cv::Mat");
+}
 
 cameraManager::~cameraManager() {}
 
 void cameraManager::startCam(int width, int height, int framerate) {
 
-    cam.options->video_width=width;
-    cam.options->video_height=height;
-    cam.options->framerate=framerate;
+    cam = std::make_unique<lccv::PiCamera>();
+    
+    cam->options->video_width=width;
+    cam->options->video_height=height;
+    cam->options->framerate=framerate;
+    cam->options->verbose=true;
 
-    isRunning = true;  
-}
-
-void cameraManager::stopCam() {
-
-    isRunning = false;
-}
-
-void cameraManager::run() {
-
-    qDebug() << "Starting Cmaera";
-    cam.startVideo();
+    isRunning = true;
+    
+    cv::Mat currentFrame(cam->options->video_height, cam->options->video_width, CV_8UC3);
+    
+    qDebug() << "Starting Camera";
+    cam->startVideo();
 
     while(isRunning) {
 
-        if(!cam.getVideoFrame(currentFrame, 1000))
+        if(!cam->getVideoFrame(currentFrame, 1000))
             qDebug() << "Cam Timeout error";
-        else
+        else {
             emit sendCurrentFrame(currentFrame.clone());
-
+            //qDebug() << "Cam Frame";
+            //cv::imwrite("output.jpeg", currentFrame);
+        }
     }
+    
+    cam->stopVideo();
+}
 
-    cam.stopVideo();
-    qDebug() << "Stopping Cmaera";
+void cameraManager::stopCam() {
+    isRunning = false;
 }

@@ -6,24 +6,27 @@
 #include <QThread>
 #include <QObject>
 #include <QDebug>
+#include <QMetaType>
+
+#include <iostream>
 
 #include <opencv2/opencv.hpp>
 
-class cameraManager : public QThread {
+class cameraManager : public QObject {
     Q_OBJECT
 public:
-    explicit cameraManager(QObject *parent = nullptr);
+    cameraManager();
     ~cameraManager();
-    void startCam(int width, int height, int framerate);
+
+public slots:
+    void startCam(int width, int height, int framerate); 
     void stopCam();
-    void run() override;
 
 signals:
     void sendCurrentFrame(cv::Mat frame);
 
 private:
-    cv::Mat currentFrame;
-    lccv::PiCamera cam;
+    std::unique_ptr<lccv::PiCamera> cam;
     bool isRunning = false;
 };
 
